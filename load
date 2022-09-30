@@ -1,0 +1,21 @@
+//加载图片
+void load() {
+	loadimage(&img_bk, _T("res/bk.jpg"));
+	loadimage(&img_b, _T("res/b.jpg"));
+	loadimage(&img_A, _T("res/A.jpg"));
+	loadimage(&img_B, _T("res/B.jpg"));
+}
+
+//  画图
+void gamedraw() {
+	int i, j;
+	putimage(0, 0, &img_bk);
+	for (i = 0; i < WIDTH / blockwidth; i++)
+		for (j = 0; j < HEIGHT / blockwidth; j++) {
+			if (bk[i][j].exist == 1)
+				putimage(bk[i][j].x, bk[i][j].y, &img_b);
+		}
+	// 输出角色图片
+
+
+}
