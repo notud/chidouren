@@ -9,7 +9,8 @@ using namespace std;
 
 //画面大小
 #define WIDTH 1200
-#define HEIGHT 700
+#define HEIGHT 720
+#define time 2000
 
 struct Bk {
 	unsigned int x;
@@ -163,7 +164,7 @@ int main() {
 	load();
 	BeginBatchDraw();
 	while (1) {
-		while (clock() - start > 20000) {
+		while (clock() - start > time) {
 			start = clock();
 			bkinit();
 			point(0 + blockwidth / 2, WIDTH - blockwidth / 2, HEIGHT - blockwidth / 2, 0 + blockwidth / 2);
@@ -174,3 +175,4 @@ int main() {
 	EndBatchDraw();
 	return 0;
 }
+
