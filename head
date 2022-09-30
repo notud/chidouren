@@ -1,0 +1,14 @@
+#include <iostream>
+#include <stdlib.h>
+#include <graphics.h>
+#include <conio.h>
+#include<time.h>
+using namespace std;
+//将画面划分成网格
+#define blockwidth 10//每个网格的宽度
+
+//画面大小
+#define WIDTH 1200
+#define HEIGHT 720
+#define changemaze 20000
+#define playerwidth 10
