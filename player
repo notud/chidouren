@@ -1,0 +1,60 @@
+typedef struct player {
+	int exist;
+	unsigned int x;
+	unsigned int y;
+	int speed;
+}PLAYER;
+
+player A;
+player B;
+IMAGE img_A;
+IMAGE img_B;
+
+void initplayer() {
+	A.x = 100;
+	A.y = 100;
+	A.exist = 1;
+	A.speed = 5;
+	B.x = WIDTH - 100;
+	B.y = HEIGHT - 100;
+	B.exist = 1;
+	B.speed = 5;
+}
+
+//player移动
+void playerMove(int x, int y)
+{
+	//A移动
+	if (GetAsyncKeyState(87))//W
+
+		A.y -= A.speed;
+
+	if (GetAsyncKeyState(83))//S
+
+		A.y += A.speed;
+
+	if (GetAsyncKeyState(65))//A
+
+		A.x -= A.speed;
+
+	if (GetAsyncKeyState(68))//D
+
+		A.x += A.speed;
+	//B移动
+	if (GetAsyncKeyState(38))//W
+
+		B.y -= B.speed;
+
+	if (GetAsyncKeyState(40))//S
+
+		B.y += B.speed;
+
+	if (GetAsyncKeyState(37))//A
+
+		B.x -= B.speed;
+
+	if (GetAsyncKeyState(39))//D
+
+		B.x += B.speed;
+
+}
