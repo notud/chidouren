@@ -1,0 +1,176 @@
+#include <iostream>
+#include <stdlib.h>
+#include <graphics.h>
+#include <conio.h>
+#include<time.h>
+using namespace std;
+//将画面划分成网格
+#define blockwidth 10//每个网格的宽度
+
+//画面大小
+#define WIDTH 1200
+#define HEIGHT 700
+
+struct Bk {
+	unsigned int x;
+	unsigned int y;
+	int exist = 0;
+}bk[WIDTH / blockwidth][HEIGHT / blockwidth];
+
+IMAGE img_bk;
+IMAGE img_b; 
+
+//初始化
+void bkinit() {
+	int i, j;
+	for (i = 0; i < WIDTH / blockwidth; i++) {
+	for (j = 0; j < HEIGHT / blockwidth; j++) {
+		//边框
+		if (i == 0 || j == 0||i ==( WIDTH / blockwidth - 1)||j == (HEIGHT / blockwidth - 1))
+			bk[i][j].exist = 1;
+		else//  其他
+			bk[i][j].exist = 0;
+
+		bk[i][j].x = blockwidth / 2 + blockwidth * i;
+		bk[i][j].y = blockwidth / 2 + blockwidth * j;
+	}
+}
+}
+
+
+//随即在x,y之间间距为w，生成一个数，不包括端点
+void kaikou(unsigned int nowx, unsigned int nowy, unsigned int leftx, unsigned int rightx, unsigned int topy, unsigned int downy) {
+	unsigned int a;
+	unsigned int x;
+	
+	a = rand() % 4;
+	if (a == 0){
+		// 在nowx和rightx之间生生一个坐标点
+		x = blockwidth * (rand() % ((rightx - nowx) / blockwidth - 1)) + nowx + blockwidth;
+		bk[(x - blockwidth / 2) / blockwidth][(nowy - blockwidth / 2) / blockwidth].exist = 0;
+		//在downy和nowy之间生产一个随机坐标
+		x = blockwidth * (rand() % ((nowy - downy) / blockwidth - 1)) + downy + blockwidth;
+		bk[(nowx - blockwidth / 2) / blockwidth][(x - blockwidth / 2) / blockwidth].exist = 0;
+		//在leftx和nowx之间随机生成一个点
+		x = blockwidth * (rand() % ((nowx - leftx) / blockwidth - 1)) + leftx + blockwidth;
+		bk[(x - blockwidth / 2) / blockwidth][(nowy - blockwidth / 2) / blockwidth].exist = 0;
+		}
+		if (a == 1) {
+			//在downy和nowy之间生产一个随机坐标
+			x = blockwidth * (rand() % ((nowy - downy) / blockwidth - 1)) + downy + blockwidth;
+			bk[(nowx - blockwidth / 2) / blockwidth][(x - blockwidth / 2) / blockwidth].exist = 0;
+			//在leftx和nowx之间随机生成一个点
+			x = blockwidth * (rand() % ((nowx - leftx) / blockwidth - 1)) + leftx + blockwidth;
+			bk[(x - blockwidth / 2) / blockwidth][(nowy - blockwidth / 2) / blockwidth].exist = 0;
+			//在nowy和topy之间随机生成一个点
+			x = blockwidth * (rand() % ((topy - nowy) / blockwidth - 1)) + nowy + blockwidth;
+			bk[(nowx - blockwidth / 2) / blockwidth][(x - blockwidth / 2) / blockwidth].exist = 0;
+		}
+	if (a == 2) {
+		//在leftx和nowx之间随机生成一个点
+		x = blockwidth * (rand() % ((nowx - leftx) / blockwidth - 1)) + leftx + blockwidth;
+		bk[(x - blockwidth / 2) / blockwidth][(nowy - blockwidth / 2) / blockwidth].exist = 0;
+		//在nowy和topy之间随机生成一个点
+		x = blockwidth * (rand() % ((topy - nowy) / blockwidth - 1)) + nowy + blockwidth;
+		bk[(nowx - blockwidth / 2) / blockwidth][(x - blockwidth / 2) / blockwidth].exist = 0;
+		// 在nowx和rightx之间生生一个坐标点
+		x = blockwidth * (rand() % ((rightx - nowx) / blockwidth - 1)) + nowx + blockwidth;
+		bk[(x - blockwidth / 2) / blockwidth][(nowy - blockwidth / 2) / blockwidth].exist = 0;
+	}
+	if (a == 3) {
+		//在nowy和topy之间随机生成一个点
+		x = blockwidth * (rand() % ((topy - nowy) / blockwidth - 1)) + nowy + blockwidth;
+		bk[(nowx - blockwidth / 2) / blockwidth][(x - blockwidth / 2) / blockwidth].exist = 0;
+		// 在nowx和rightx之间生生一个坐标点
+		x = blockwidth * (rand() % ((rightx - nowx) / blockwidth - 1)) + nowx + blockwidth;
+		bk[(x - blockwidth / 2) / blockwidth][(nowy - blockwidth / 2) / blockwidth].exist = 0;
+		//在downy和nowy之间生产一个随机坐标
+		x = blockwidth * (rand() % ((nowy - downy) / blockwidth - 1)) + downy + blockwidth;
+		bk[(nowx - blockwidth / 2) / blockwidth][(x - blockwidth / 2) / blockwidth].exist = 0;
+	}
+	
+	/*
+	//开四面墙
+	//在nowy和topy之间随机生成一个点
+	x = blockwidth * (rand() % ((topy - nowy) / blockwidth - 1)) + nowy + blockwidth;
+	bk[(nowx - blockwidth / 2) / blockwidth][(x - blockwidth / 2) / blockwidth].exist = 0;
+	// 在nowx和rightx之间生生一个坐标点
+	x = blockwidth * (rand() % ((rightx - nowx) / blockwidth - 1)) + nowx + blockwidth;
+	bk[(x - blockwidth / 2) / blockwidth][(nowy - blockwidth / 2) / blockwidth].exist = 0;
+	//在downy和nowy之间生产一个随机坐标
+	x = blockwidth * (rand() % ((nowy - downy) / blockwidth - 1)) + downy + blockwidth;
+	bk[(nowx - blockwidth / 2) / blockwidth][(x - blockwidth / 2) / blockwidth].exist = 0;
+	//在leftx和nowx之间随机生成一个点
+	x = blockwidth * (rand() % ((nowx - leftx) / blockwidth - 1)) + leftx + blockwidth;
+	bk[(x - blockwidth / 2) / blockwidth][(nowy - blockwidth / 2) / blockwidth].exist = 0;
+	*/
+
+	}
+
+
+
+//生成随机点(x,yj均为图片坐标)
+void point(unsigned int leftx, unsigned int rightx, unsigned int topy, unsigned int downy) {
+
+	if ((rightx - leftx) > 5 * blockwidth && (topy - downy) > 5 * blockwidth) {// 防止间距过窄
+		unsigned int nowx, nowy;
+		int i=0;
+		//生成随机点
+		nowx = blockwidth * (rand() % ((rightx - leftx) / blockwidth - 4)) + leftx + 2 * blockwidth;
+		nowy = blockwidth * (rand() % ((topy - downy) / blockwidth - 4)) + downy + 2 * blockwidth;
+		//随机方块坐标为nowx，nowy
+
+		//将行列变为存在
+		for (i = (leftx+blockwidth/2)/blockwidth; i < (rightx-blockwidth/2) / blockwidth; i++) 
+			bk[i][(nowy - blockwidth / 2) / blockwidth].exist = 1;
+		for (i = (downy + blockwidth / 2) / blockwidth; i < (topy - blockwidth / 2) / blockwidth; i++)
+			bk[(nowx - blockwidth / 2) / blockwidth][i].exist = 1;
+		
+		//开口
+		kaikou(nowx, nowy, leftx, rightx, topy, downy);
+		point(nowx, rightx, nowy, downy);
+		point(leftx, nowx, nowy, downy);
+		point(leftx, nowx, topy, nowy);
+		point(nowx, rightx, topy, nowy);
+	}
+
+}
+
+//加载图片
+void load() {
+	loadimage(&img_bk, _T("res/bk.jpg"));
+	loadimage(&img_b, _T("res/b.jpg"));
+}
+
+//  画图
+void gamedraw() {
+	int i, j;
+	putimage(0, 0, &img_bk);
+	for (i = 0; i < WIDTH / blockwidth; i++)
+		for (j = 0; j < HEIGHT / blockwidth; j++) {
+			if (bk[i][j].exist == 1)
+				putimage(bk[i][j].x, bk[i][j].y, &img_b);
+		}
+
+}
+
+int main() {
+	int start = clock_t();
+	srand(time(0));
+	initgraph(WIDTH, HEIGHT);
+	bkinit();
+	point(0 + blockwidth / 2, WIDTH - blockwidth / 2, HEIGHT - blockwidth / 2, 0 + blockwidth / 2);
+	load();
+	BeginBatchDraw();
+	while (1) {
+		while (clock() - start > 20000) {
+			start = clock();
+			bkinit();
+			point(0 + blockwidth / 2, WIDTH - blockwidth / 2, HEIGHT - blockwidth / 2, 0 + blockwidth / 2);
+		}
+		gamedraw();
+		FlushBatchDraw();
+	}
+	EndBatchDraw();
+	return 0;
+}
