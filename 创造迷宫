@@ -1,18 +1,4 @@
-#include <iostream>
-#include <stdlib.h>
-#include <graphics.h>
-#include <conio.h>
-#include<time.h>
-using namespace std;
-//将画面划分成网格
-#define blockwidth 10//每个网格的宽度
-
-//画面大小
-#define WIDTH 1200
-#define HEIGHT 720
-#define changemaze 20000
-
-struct Bk {
+truct Bk {
 	unsigned int x;
 	unsigned int y;
 	int exist = 0;
@@ -135,44 +121,5 @@ void point(unsigned int leftx, unsigned int rightx, unsigned int topy, unsigned 
 		point(nowx, rightx, topy, nowy);
 	}
 
-}
-
-//加载图片
-void load() {
-	loadimage(&img_bk, _T("res/bk.jpg"));
-	loadimage(&img_b, _T("res/b.jpg"));
-}
-
-//  画图
-void gamedraw() {
-	int i, j;
-	putimage(0, 0, &img_bk);
-	for (i = 0; i < WIDTH / blockwidth; i++)
-		for (j = 0; j < HEIGHT / blockwidth; j++) {
-			if (bk[i][j].exist == 1)
-				putimage(bk[i][j].x, bk[i][j].y, &img_b);
-		}
-
-}
-
-int main() {
-	int start = clock_t();
-	srand(time(0));
-	initgraph(WIDTH, HEIGHT);
-	bkinit();
-	point(0 + blockwidth / 2, WIDTH - blockwidth / 2, HEIGHT - blockwidth / 2, 0 + blockwidth / 2);
-	load();
-	BeginBatchDraw();
-	while (1) {
-		while (clock() - start > changemaze) {
-			start = clock();
-			bkinit();
-			point(0 + blockwidth / 2, WIDTH - blockwidth / 2, HEIGHT - blockwidth / 2, 0 + blockwidth / 2);
-		}
-		gamedraw();
-		FlushBatchDraw();
-	}
-	EndBatchDraw();
-	return 0;
 }
 
