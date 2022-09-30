@@ -10,7 +10,7 @@ using namespace std;
 //画面大小
 #define WIDTH 1200
 #define HEIGHT 720
-#define time 2000
+#define changemaze 20000
 
 struct Bk {
 	unsigned int x;
@@ -117,8 +117,8 @@ void point(unsigned int leftx, unsigned int rightx, unsigned int topy, unsigned 
 		unsigned int nowx, nowy;
 		int i=0;
 		//生成随机点
-		nowx = blockwidth * (rand() % ((rightx - leftx) / blockwidth - 4)) + leftx + 2 * blockwidth;
-		nowy = blockwidth * (rand() % ((topy - downy) / blockwidth - 4)) + downy + 2 * blockwidth;
+		nowx = blockwidth * (rand() % ((rightx - leftx) / blockwidth - 3)) + leftx + 2 * blockwidth;
+		nowy = blockwidth * (rand() % ((topy - downy) / blockwidth - 3)) + downy + 2 * blockwidth;
 		//随机方块坐标为nowx，nowy
 
 		//将行列变为存在
@@ -164,7 +164,7 @@ int main() {
 	load();
 	BeginBatchDraw();
 	while (1) {
-		while (clock() - start > time) {
+		while (clock() - start > changemaze) {
 			start = clock();
 			bkinit();
 			point(0 + blockwidth / 2, WIDTH - blockwidth / 2, HEIGHT - blockwidth / 2, 0 + blockwidth / 2);
