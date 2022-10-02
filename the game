@@ -6,7 +6,7 @@
 using namespace std;
 //将画面划分成网格
 #define blockwidth 20//每个网格的宽度
-#define bian 50//变身所需个数
+#define bian 100//变身所需个数
 #define changetime 300//变身时间
 
 //画面大小
@@ -344,17 +344,17 @@ void gamedraw() {
 			fillcircle(A.x, A.y, playerwidth / 2);
 		}
 	}
-	if (B.exist == 1) {
-		if (B.zhuangtai == 0) {
-			setfillcolor(BLUE);
-			fillcircle(B.x, B.y, playerwidth / 2);
-		}
-		if (B.zhuangtai == 1) {
-			setfillcolor(GREEN);
-			fillcircle(B.x, B.y, playerwidth / 2);
-		}
+	if(B.exist==1){
+	if (B.zhuangtai == 0) {
+	setfillcolor(BLUE);
+	fillcircle(B.x, B.y, playerwidth / 2);
+}
+	if (B.zhuangtai == 1) {
+		setfillcolor(GREEN);
+		fillcircle(B.x, B.y, playerwidth / 2);
 	}
 }
+	}
 
 //吃豆子
 void eatdot() {
@@ -512,6 +512,7 @@ int main() {
 		ctrlFps(start_time);
 		FlushBatchDraw();
 	}
+	
 	EndBatchDraw();
 	return 0;
 }
