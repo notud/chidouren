@@ -6,15 +6,21 @@
 using namespace std;
 //将画面划分成网格
 #define blockwidth 20//每个网格的宽度
+#define bian 50//变身所需个数
+#define changetime 300//变身时间
 
 //画面大小
 #define WIDTH 1200
 #define HEIGHT 720
 #define changemaze 20000
 #define playerwidth 16
+
+int Atime = 0;
+int Btime = 0;
 struct Bk {
 	unsigned int x;
 	unsigned int y;
+	int dot;
 	int exist = 0;
 }bk[WIDTH / blockwidth][HEIGHT / blockwidth];
 
@@ -27,32 +33,47 @@ void bkinit() {
 	for (i = 0; i < WIDTH / blockwidth; i++) {
 	for (j = 0; j < HEIGHT / blockwidth; j++) {
 		//边框
-		if (i == 0 || j == 0||i ==( WIDTH / blockwidth - 1)||j == (HEIGHT / blockwidth - 1))
+		if (i == 0 || j == 0 || i == (WIDTH / blockwidth - 1) || j == (HEIGHT / blockwidth - 1)) {
 			bk[i][j].exist = 1;
-		else//  其他
+		}
+		else {
 			bk[i][j].exist = 0;
+		}
 
 		bk[i][j].x = blockwidth / 2 + blockwidth * i;
 		bk[i][j].y = blockwidth / 2 + blockwidth * j;
+		
 	}
 }
 }
 void bkzeroinit() {
 	int i, j;
 	for (i = 1; i < WIDTH / blockwidth-1; i++) 
-		for (j = 1; j < HEIGHT / blockwidth-1; j++) 
-				bk[i][j].exist = 0;
+		for (j = 1; j < HEIGHT / blockwidth - 1; j++) {
+			bk[i][j].exist = 0;
+			bk[i][j].dot = 1;
+		}
 }
+
+//边框
 void existinit() {
 	int i, j;
-	for (i = 0,j=0; i < WIDTH / blockwidth; i++) 
-			bk[i][j].exist = 1;
-		for (j = 0,i=0; j < HEIGHT / blockwidth; j++) 
-				bk[i][j].exist = 1;
-		for (j = 0, i = WIDTH / blockwidth - 1; j < HEIGHT / blockwidth; j++)
-			bk[i][j].exist = 1;
-		for (i = HEIGHT / blockwidth - 1, j = 0; i < WIDTH / blockwidth; i++)
-			bk[i][j].exist = 1;
+	for (i = 0, j = 0; i < WIDTH / blockwidth; i++) {
+		bk[i][j].exist = 1;
+		bk[i][j].dot = 0;
+	}
+	for (j = 0, i = 0; j < HEIGHT / blockwidth; j++) {
+		bk[i][j].exist = 1;
+		bk[i][j].dot = 0;
+	}
+	for (j = 0, i = WIDTH / blockwidth - 1; j < HEIGHT / blockwidth; j++) {
+		bk[i][j].dot = 0;
+		bk[i][j].exist = 1;
+	}
+	for (i = HEIGHT / blockwidth - 1, j = 0; i < WIDTH / blockwidth; i++) {
+		bk[i][j].dot = 0;
+		bk[i][j].exist = 1;
+	}
 
 	
 
@@ -114,37 +135,55 @@ void kaikou(unsigned int nowx, unsigned int nowy, unsigned int leftx, unsigned i
 	//在nowy和topy之间随机生成一个点
 	x = blockwidth * (rand() % ((topy - nowy) / blockwidth - 1)) + nowy + blockwidth;
 	bk[(nowx - blockwidth / 2) / blockwidth][(x - blockwidth / 2) / blockwidth].exist = 0;
+	bk[(nowx - blockwidth / 2) / blockwidth][(x - blockwidth / 2) / blockwidth].dot = 1;
 	// 在nowx和rightx之间生生一个坐标点
 	x = blockwidth * (rand() % ((rightx - nowx) / blockwidth - 1)) + nowx + blockwidth;
 	bk[(x - blockwidth / 2) / blockwidth][(nowy - blockwidth / 2) / blockwidth].exist = 0;
+	bk[(x - blockwidth / 2) / blockwidth][(nowy - blockwidth / 2) / blockwidth].dot = 1;
 	//在downy和nowy之间生产一个随机坐标
 	x = blockwidth * (rand() % ((nowy - downy) / blockwidth - 1)) + downy + blockwidth;
 	bk[(nowx - blockwidth / 2) / blockwidth][(x - blockwidth / 2) / blockwidth].exist = 0;
+	bk[(nowx - blockwidth / 2) / blockwidth][(x - blockwidth / 2) / blockwidth].dot = 1;
 	//在leftx和nowx之间随机生成一个点
 	x = blockwidth * (rand() % ((nowx - leftx) / blockwidth - 1)) + leftx + blockwidth;
 	bk[(x - blockwidth / 2) / blockwidth][(nowy - blockwidth / 2) / blockwidth].exist = 0;
+	bk[(x - blockwidth / 2) / blockwidth][(nowy - blockwidth / 2) / blockwidth].dot = 1;
 	
 
 	}
 
-
-
+void createdot() {
+	int i, j;
+	for (i = 0; i < WIDTH / blockwidth; i++) {
+		for (j = 0; j < HEIGHT / blockwidth; j++) {
+			
+			if (bk[i][j].dot == 1) {
+				setfillcolor(YELLOW);
+				fillcircle(bk[i][j].x, bk[i][j].y, 4);
+			}
+		}
+	}
+}
 //生成随机点(x,yj均为图片坐标)
 void point(unsigned int leftx, unsigned int rightx, unsigned int topy, unsigned int downy) {
 
 	if ((rightx - leftx) > 5 * blockwidth && (topy - downy) > 5 * blockwidth) {// 防止间距过窄
 		unsigned int nowx, nowy;
-		int i=0;
+		int i = 0;
 		//生成随机点
 		nowx = blockwidth * (rand() % ((rightx - leftx) / blockwidth - 3)) + leftx + 2 * blockwidth;
 		nowy = blockwidth * (rand() % ((topy - downy) / blockwidth - 3)) + downy + 2 * blockwidth;
 		//随机方块坐标为nowx，nowy
 
 		//将行列变为存在
-		for (i = (leftx+blockwidth/2)/blockwidth; i < (rightx-blockwidth/2) / blockwidth; i++) 
+		for (i = (leftx + blockwidth / 2) / blockwidth; i < (rightx - blockwidth / 2) / blockwidth; i++) {
 			bk[i][(nowy - blockwidth / 2) / blockwidth].exist = 1;
-		for (i = (downy + blockwidth / 2) / blockwidth; i < (topy - blockwidth / 2) / blockwidth; i++)
-			bk[(nowx - blockwidth / 2) / blockwidth][i].exist = 1;
+			bk[i][(nowy - blockwidth / 2) / blockwidth].dot = 0;
+		}
+		for (i = (downy + blockwidth / 2) / blockwidth; i < (topy - blockwidth / 2) / blockwidth; i++) {
+		bk[(nowx - blockwidth / 2) / blockwidth][i].exist = 1;
+		bk[(nowx - blockwidth / 2) / blockwidth][i].dot = 0;
+	}
 		
 		//开口
 		kaikou(nowx, nowy, leftx, rightx, topy, downy);
@@ -268,8 +307,10 @@ void clearplayerround() {
 	x = B.x - m;
 	y = B.y - n;
 	for (i = x / blockwidth - 1; i < x / blockwidth + 2; i++)
-		for (j = y / blockwidth - 1; j < y / blockwidth + 2; j++)
+		for (j = y / blockwidth - 1; j < y / blockwidth + 2; j++) {
 			bk[i][j].exist = 0;
+			bk[i][j].dot = 0;
+		}
 }
 
 
@@ -286,15 +327,119 @@ void gamedraw() {
 	for (i = 0; i < WIDTH / blockwidth; i++)
 		for (j = 0; j < HEIGHT / blockwidth; j++) {
 			if (bk[i][j].exist == 1)
-				putimage(bk[i][j].x - blockwidth / 2, bk[i][j].y - blockwidth/2 , &img_b);
+				putimage(bk[i][j].x - blockwidth / 2, bk[i][j].y - blockwidth / 2, &img_b);
 		}
+
+	//豆子
+	createdot();
+
 	// 输出角色
-	setfillcolor(RED);
-	fillcircle(A.x , A.y,playerwidth/2);
-	setfillcolor(BLUE);
-	fillcircle(B.x , B.y, playerwidth/2);
+	if (A.exist == 1) {
+		if (A.zhuangtai == 0) {
+			setfillcolor(RED);
+			fillcircle(A.x, A.y, playerwidth / 2);
+		}
+		if (A.zhuangtai == 1) {
+			setfillcolor(BLACK);
+			fillcircle(A.x, A.y, playerwidth / 2);
+		}
+	}
+	if (B.exist == 1) {
+		if (B.zhuangtai == 0) {
+			setfillcolor(BLUE);
+			fillcircle(B.x, B.y, playerwidth / 2);
+		}
+		if (B.zhuangtai == 1) {
+			setfillcolor(GREEN);
+			fillcircle(B.x, B.y, playerwidth / 2);
+		}
+	}
 }
 
+//吃豆子
+void eatdot() {
+	//A
+	unsigned int m = A.x%blockwidth;
+	unsigned int n = A.y% blockwidth;
+	unsigned int x = A.x - m;
+	unsigned int y = A.y - n;
+	if (A.zhuangtai == 0) {
+		if (A.x - playerwidth / 2 <= x + blockwidth / 2 && bk[x / blockwidth][y / blockwidth].dot == 1)//左边有豆子
+		{
+			A.dot++;
+			bk[x / blockwidth][y / blockwidth].dot = 0;
+		}
+
+		if (A.x + playerwidth / 2 >= x + blockwidth / 2 && bk[x / blockwidth][y / blockwidth].dot == 1)//右边有豆子
+		{
+			A.dot++;
+			bk[x / blockwidth][y / blockwidth].dot = 0;
+		}
+		if (A.y - playerwidth / 2 <= y + blockwidth / 2 && bk[x / blockwidth][y / blockwidth].dot == 1)//上面有豆子
+		{
+			A.dot++;
+			bk[x / blockwidth][y / blockwidth].dot = 0;
+		}
+		if (A.y + playerwidth / 2 >= y + blockwidth / 2 && bk[x / blockwidth][y / blockwidth].dot == 1)//下面有豆子
+		{
+			A.dot++;
+			bk[x / blockwidth][y / blockwidth].dot = 0;
+		}
+	}
+	if (B.zhuangtai == 0) {
+		m = B.x%blockwidth;
+		n = B.y% blockwidth;
+		x = B.x - m;
+		y = B.y - n;
+		if (B.x - playerwidth / 2 <= x + blockwidth / 2 && bk[x / blockwidth][y / blockwidth].dot == 1)//左边有豆子
+		{
+			B.dot++;
+			bk[x / blockwidth][y / blockwidth].dot = 0;
+		}
+
+		if (B.x + playerwidth / 2 >= x + blockwidth / 2 && bk[x / blockwidth][y / blockwidth].dot == 1)//右边有豆子
+		{
+			B.dot++;
+			bk[x / blockwidth][y / blockwidth].dot = 0;
+		}
+		if (B.y - playerwidth / 2 <= y + blockwidth / 2 && bk[x / blockwidth][y / blockwidth].dot == 1)//上面有豆子
+		{
+			B.dot++;
+			bk[x / blockwidth][y / blockwidth].dot = 0;
+		}
+		if (B.y + playerwidth / 2 >= y + blockwidth / 2 && bk[x / blockwidth][y / blockwidth].dot == 1)//下面有豆子
+		{
+			B.dot++;
+			bk[x / blockwidth][y / blockwidth].dot = 0;
+		}
+
+	}
+}
+
+//进入能吃对方的状态
+void Ainzhuangtai() {
+
+		A.dot = 0;
+		A.zhuangtai = 1;
+			A.speed = 5;
+}
+void Binzhuangtai() {
+
+		B.dot = 0;
+		B.zhuangtai = 1;
+		B.speed = 5;
+}
+
+void eatplayer() {
+	int m = A.x - B.x;
+	int n = A.y - B.y;
+	if (A.zhuangtai == 1 && B.zhuangtai == 0)
+		if (m*m+n*n<=playerwidth*playerwidth/4)
+			B.exist = 0;
+	if (B.zhuangtai == 1 && A.zhuangtai == 0)
+		if (m*m + n * n <= playerwidth * playerwidth / 4)
+			A.exist = 0;
+}
 void ctrlFps(int start_time)
 {
 	clock_t running_time = clock() - start_time;
@@ -302,20 +447,54 @@ void ctrlFps(int start_time)
 		Sleep(13 - running_time);//动态睡眠
 }
 
+void playerchange() {
+	if (A.dot >= bian) {
+		Ainzhuangtai();
+		Atime = 0;
+	}
+	if (B.dot >= bian) {
+		Binzhuangtai();
+		Btime = 0;
+	}
+	if (Atime > changetime) {
+		A.zhuangtai = 0;
+		A.dot = 0;
+		A.speed = 3;
+		Atime = 0;
+	}
+
+	if (Btime > changetime) {
+		B.zhuangtai = 0;
+		B.dot = 0;
+		B.speed = 3;
+		Atime = 0;
+	}
+	if (A.zhuangtai == 1)
+		Atime++;
+	if (B.zhuangtai == 1)
+		Btime++;
+}
+
 int main() {
 	int start = clock_t();
 	srand(time(0));
 	clock_t start_time;
+	
 	start_time = clock();
 	initgraph(WIDTH, HEIGHT);
 	bkinit();
+	bkzeroinit();
 	initplayer();
 	point(0 + blockwidth / 2, WIDTH - blockwidth / 2, HEIGHT - blockwidth / 2, 0 + blockwidth / 2);
 	clearplayerround();
 	existinit();
+	//地图
 	load();
 	BeginBatchDraw();
-	while (1) {
+
+	//游戏
+	while (A.exist==1||B.exist==1) {
+
 		while (clock() - start > changemaze) {
 			start = clock();
 			bkzeroinit();
@@ -323,8 +502,12 @@ int main() {
 			clearplayerround();
 			existinit();
 		}
+
 		playerMove();
 		Sleep(1);
+		eatdot();
+		playerchange();
+		eatplayer();
 		gamedraw();
 		ctrlFps(start_time);
 		FlushBatchDraw();
