@@ -211,11 +211,11 @@ void initplayer() {
 	A.x = 100;
 	A.y = 100;
 	A.exist = 1;
-	A.speed = 3;
+	A.speed = 5;
 	B.x = WIDTH - 100;
 	B.y = HEIGHT - 100;
 	B.exist = 1;
-	B.speed = 3;
+	B.speed = 5;
 	A.dot = 0;
 	B.dot = 0;
 	A.zhuangtai = 0;
@@ -421,13 +421,13 @@ void Ainzhuangtai() {
 
 		A.dot = 0;
 		A.zhuangtai = 1;
-			A.speed = 5;
+			A.speed = 7;
 }
 void Binzhuangtai() {
 
 		B.dot = 0;
 		B.zhuangtai = 1;
-		B.speed = 5;
+		B.speed = 7;
 }
 
 void eatplayer() {
