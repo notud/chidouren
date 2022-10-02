@@ -1,0 +1,334 @@
+#include <iostream>
+#include <stdlib.h>
+#include <graphics.h>
+#include <conio.h>
+#include<time.h>
+using namespace std;
+//将画面划分成网格
+#define blockwidth 20//每个网格的宽度
+
+//画面大小
+#define WIDTH 1200
+#define HEIGHT 720
+#define changemaze 20000
+#define playerwidth 16
+struct Bk {
+	unsigned int x;
+	unsigned int y;
+	int exist = 0;
+}bk[WIDTH / blockwidth][HEIGHT / blockwidth];
+
+IMAGE img_bk;
+IMAGE img_b; 
+
+//初始化
+void bkinit() {
+	int i, j;
+	for (i = 0; i < WIDTH / blockwidth; i++) {
+	for (j = 0; j < HEIGHT / blockwidth; j++) {
+		//边框
+		if (i == 0 || j == 0||i ==( WIDTH / blockwidth - 1)||j == (HEIGHT / blockwidth - 1))
+			bk[i][j].exist = 1;
+		else//  其他
+			bk[i][j].exist = 0;
+
+		bk[i][j].x = blockwidth / 2 + blockwidth * i;
+		bk[i][j].y = blockwidth / 2 + blockwidth * j;
+	}
+}
+}
+void bkzeroinit() {
+	int i, j;
+	for (i = 1; i < WIDTH / blockwidth-1; i++) 
+		for (j = 1; j < HEIGHT / blockwidth-1; j++) 
+				bk[i][j].exist = 0;
+}
+void existinit() {
+	int i, j;
+	for (i = 0,j=0; i < WIDTH / blockwidth; i++) 
+			bk[i][j].exist = 1;
+		for (j = 0,i=0; j < HEIGHT / blockwidth; j++) 
+				bk[i][j].exist = 1;
+		for (j = 0, i = WIDTH / blockwidth - 1; j < HEIGHT / blockwidth; j++)
+			bk[i][j].exist = 1;
+		for (i = HEIGHT / blockwidth - 1, j = 0; i < WIDTH / blockwidth; i++)
+			bk[i][j].exist = 1;
+
+	
+
+}
+
+//随即在x,y之间间距为w，生成一个数，不包括端点
+void kaikou(unsigned int nowx, unsigned int nowy, unsigned int leftx, unsigned int rightx, unsigned int topy, unsigned int downy) {
+	unsigned int a;
+	unsigned int x;
+	/*
+	a = rand() % 4;
+	if (a == 0){
+		// 在nowx和rightx之间生生一个坐标点
+		x = blockwidth * (rand() % ((rightx - nowx) / blockwidth - 1)) + nowx + blockwidth;
+		bk[(x - blockwidth / 2) / blockwidth][(nowy - blockwidth / 2) / blockwidth].exist = 0;
+		//在downy和nowy之间生产一个随机坐标
+		x = blockwidth * (rand() % ((nowy - downy) / blockwidth - 1)) + downy + blockwidth;
+		bk[(nowx - blockwidth / 2) / blockwidth][(x - blockwidth / 2) / blockwidth].exist = 0;
+		//在leftx和nowx之间随机生成一个点
+		x = blockwidth * (rand() % ((nowx - leftx) / blockwidth - 1)) + leftx + blockwidth;
+		bk[(x - blockwidth / 2) / blockwidth][(nowy - blockwidth / 2) / blockwidth].exist = 0;
+		}
+		if (a == 1) {
+			//在downy和nowy之间生产一个随机坐标
+			x = blockwidth * (rand() % ((nowy - downy) / blockwidth - 1)) + downy + blockwidth;
+			bk[(nowx - blockwidth / 2) / blockwidth][(x - blockwidth / 2) / blockwidth].exist = 0;
+			//在leftx和nowx之间随机生成一个点
+			x = blockwidth * (rand() % ((nowx - leftx) / blockwidth - 1)) + leftx + blockwidth;
+			bk[(x - blockwidth / 2) / blockwidth][(nowy - blockwidth / 2) / blockwidth].exist = 0;
+			//在nowy和topy之间随机生成一个点
+			x = blockwidth * (rand() % ((topy - nowy) / blockwidth - 1)) + nowy + blockwidth;
+			bk[(nowx - blockwidth / 2) / blockwidth][(x - blockwidth / 2) / blockwidth].exist = 0;
+		}
+	if (a == 2) {
+		//在leftx和nowx之间随机生成一个点
+		x = blockwidth * (rand() % ((nowx - leftx) / blockwidth - 1)) + leftx + blockwidth;
+		bk[(x - blockwidth / 2) / blockwidth][(nowy - blockwidth / 2) / blockwidth].exist = 0;
+		//在nowy和topy之间随机生成一个点
+		x = blockwidth * (rand() % ((topy - nowy) / blockwidth - 1)) + nowy + blockwidth;
+		bk[(nowx - blockwidth / 2) / blockwidth][(x - blockwidth / 2) / blockwidth].exist = 0;
+		// 在nowx和rightx之间生生一个坐标点
+		x = blockwidth * (rand() % ((rightx - nowx) / blockwidth - 1)) + nowx + blockwidth;
+		bk[(x - blockwidth / 2) / blockwidth][(nowy - blockwidth / 2) / blockwidth].exist = 0;
+	}
+	if (a == 3) {
+		//在nowy和topy之间随机生成一个点
+		x = blockwidth * (rand() % ((topy - nowy) / blockwidth - 1)) + nowy + blockwidth;
+		bk[(nowx - blockwidth / 2) / blockwidth][(x - blockwidth / 2) / blockwidth].exist = 0;
+		// 在nowx和rightx之间生生一个坐标点
+		x = blockwidth * (rand() % ((rightx - nowx) / blockwidth - 1)) + nowx + blockwidth;
+		bk[(x - blockwidth / 2) / blockwidth][(nowy - blockwidth / 2) / blockwidth].exist = 0;
+		//在downy和nowy之间生产一个随机坐标
+		x = blockwidth * (rand() % ((nowy - downy) / blockwidth - 1)) + downy + blockwidth;
+		bk[(nowx - blockwidth / 2) / blockwidth][(x - blockwidth / 2) / blockwidth].exist = 0;
+	}
+	*/
+	
+	//开四面墙
+	//在nowy和topy之间随机生成一个点
+	x = blockwidth * (rand() % ((topy - nowy) / blockwidth - 1)) + nowy + blockwidth;
+	bk[(nowx - blockwidth / 2) / blockwidth][(x - blockwidth / 2) / blockwidth].exist = 0;
+	// 在nowx和rightx之间生生一个坐标点
+	x = blockwidth * (rand() % ((rightx - nowx) / blockwidth - 1)) + nowx + blockwidth;
+	bk[(x - blockwidth / 2) / blockwidth][(nowy - blockwidth / 2) / blockwidth].exist = 0;
+	//在downy和nowy之间生产一个随机坐标
+	x = blockwidth * (rand() % ((nowy - downy) / blockwidth - 1)) + downy + blockwidth;
+	bk[(nowx - blockwidth / 2) / blockwidth][(x - blockwidth / 2) / blockwidth].exist = 0;
+	//在leftx和nowx之间随机生成一个点
+	x = blockwidth * (rand() % ((nowx - leftx) / blockwidth - 1)) + leftx + blockwidth;
+	bk[(x - blockwidth / 2) / blockwidth][(nowy - blockwidth / 2) / blockwidth].exist = 0;
+	
+
+	}
+
+
+
+//生成随机点(x,yj均为图片坐标)
+void point(unsigned int leftx, unsigned int rightx, unsigned int topy, unsigned int downy) {
+
+	if ((rightx - leftx) > 5 * blockwidth && (topy - downy) > 5 * blockwidth) {// 防止间距过窄
+		unsigned int nowx, nowy;
+		int i=0;
+		//生成随机点
+		nowx = blockwidth * (rand() % ((rightx - leftx) / blockwidth - 3)) + leftx + 2 * blockwidth;
+		nowy = blockwidth * (rand() % ((topy - downy) / blockwidth - 3)) + downy + 2 * blockwidth;
+		//随机方块坐标为nowx，nowy
+
+		//将行列变为存在
+		for (i = (leftx+blockwidth/2)/blockwidth; i < (rightx-blockwidth/2) / blockwidth; i++) 
+			bk[i][(nowy - blockwidth / 2) / blockwidth].exist = 1;
+		for (i = (downy + blockwidth / 2) / blockwidth; i < (topy - blockwidth / 2) / blockwidth; i++)
+			bk[(nowx - blockwidth / 2) / blockwidth][i].exist = 1;
+		
+		//开口
+		kaikou(nowx, nowy, leftx, rightx, topy, downy);
+		point(nowx, rightx, nowy, downy);
+		point(leftx, nowx, nowy, downy);
+		point(leftx, nowx, topy, nowy);
+		point(nowx, rightx, topy, nowy);
+	}
+
+}
+
+typedef struct player {
+	int exist;
+	unsigned int x;
+	unsigned int y;
+	int zhuangtai;
+	unsigned int dot;
+	int speed;
+}PLAYER;
+
+player A;
+player B;
+
+void initplayer() {
+	A.x = 100;
+	A.y = 100;
+	A.exist = 1;
+	A.speed = 3;
+	B.x = WIDTH - 100;
+	B.y = HEIGHT - 100;
+	B.exist = 1;
+	B.speed = 3;
+	A.dot = 0;
+	B.dot = 0;
+	A.zhuangtai = 0;
+	B.zhuangtai = 0;
+}
+
+void hit() {
+	//A
+	unsigned int m = A.x%blockwidth;
+	unsigned int n = A.y% blockwidth;
+	unsigned int x=A.x - m;
+	unsigned int y =A.y - n ;
+	if (A.x - playerwidth / 2 <= x&&bk[(x-blockwidth)/blockwidth][y/blockwidth].exist==1)//左边有障碍物
+		A.x = x + playerwidth / 2;
+		if(A.x + playerwidth / 2 >= x + blockwidth && bk[(x +blockwidth) / blockwidth][y / blockwidth].exist == 1)//右边有障碍物
+			A.x = x +blockwidth-playerwidth / 2;
+		if (A.y - playerwidth / 2 <= y && bk[ x/ blockwidth][(y-blockwidth) / blockwidth].exist == 1)//上面有障碍物
+			A.y = y + playerwidth / 2;
+		if (A.y + playerwidth / 2 >= y + blockwidth && bk[x / blockwidth][(y + blockwidth) / blockwidth].exist == 1)//下面有障碍物
+			A.y = y + blockwidth - playerwidth / 2;
+		//B
+		m = B.x%blockwidth;
+		n = B.y% blockwidth;
+		x = B.x - m;
+		y = B.y - n;
+		if (B.x - playerwidth / 2 <= x && bk[(x - blockwidth) / blockwidth][y / blockwidth].exist == 1)
+			B.x = x + playerwidth / 2;
+		if (B.x + playerwidth / 2 >= x + blockwidth && bk[(x + blockwidth) / blockwidth][y / blockwidth].exist == 1)
+			B.x = x + blockwidth - playerwidth / 2;
+		if (B.y - playerwidth / 2 <= y && bk[x / blockwidth][(y - blockwidth) / blockwidth].exist == 1)
+			B.y = y + playerwidth / 2;
+		if (B.y + playerwidth / 2 >= y + blockwidth && bk[x / blockwidth][(y + blockwidth) / blockwidth].exist == 1)
+			B.y = y + blockwidth - playerwidth / 2;
+
+}
+
+
+//player移动
+void playerMove()
+{
+	//A移动
+	if (GetAsyncKeyState(87))//W
+
+		A.y -= A.speed;
+
+	if (GetAsyncKeyState(83))//S
+
+		A.y += A.speed;
+
+	if (GetAsyncKeyState(65))//A
+
+		A.x -= A.speed;
+
+	if (GetAsyncKeyState(68))//D
+
+		A.x += A.speed;
+	//B移动
+	if (GetAsyncKeyState(38))//W
+
+		B.y -= B.speed;
+
+	if (GetAsyncKeyState(40))//S
+
+		B.y += B.speed;
+
+	if (GetAsyncKeyState(37))//A
+
+		B.x -= B.speed;
+
+	if (GetAsyncKeyState(39))//D
+
+		B.x += B.speed;
+	hit();
+}
+
+// 地图随机时清除player身边方块
+void clearplayerround() {
+	unsigned int m = A.x%blockwidth;
+	unsigned int n = A.y% blockwidth;
+	unsigned int x = A.x - m;
+	unsigned int y = A.y - n;
+	unsigned int i, j;
+	for (i=x/blockwidth-1;i<x/blockwidth+2;i++)
+		for (j = y / blockwidth - 1; j < y / blockwidth + 1; j++)
+			bk[i][j].exist = 0;
+
+	m = B.x%blockwidth;
+	n = B.y% blockwidth;
+	x = B.x - m;
+	y = B.y - n;
+	for (i = x / blockwidth - 1; i < x / blockwidth + 2; i++)
+		for (j = y / blockwidth - 1; j < y / blockwidth + 2; j++)
+			bk[i][j].exist = 0;
+}
+
+
+//加载图片
+void load() {
+	loadimage(&img_bk, _T("res/bk.jpg"));
+	loadimage(&img_b, _T("res/b.jpg"));
+}
+
+//  画图
+void gamedraw() {
+	int i, j;
+	putimage(0, 0, &img_bk);
+	for (i = 0; i < WIDTH / blockwidth; i++)
+		for (j = 0; j < HEIGHT / blockwidth; j++) {
+			if (bk[i][j].exist == 1)
+				putimage(bk[i][j].x - blockwidth / 2, bk[i][j].y - blockwidth/2 , &img_b);
+		}
+	// 输出角色
+	setfillcolor(RED);
+	fillcircle(A.x , A.y,playerwidth/2);
+	setfillcolor(BLUE);
+	fillcircle(B.x , B.y, playerwidth/2);
+}
+
+void ctrlFps(int start_time)
+{
+	clock_t running_time = clock() - start_time;
+	if ((10 - running_time) >= 0)//防⽌睡眠函数使⽤负数
+		Sleep(13 - running_time);//动态睡眠
+}
+
+int main() {
+	int start = clock_t();
+	srand(time(0));
+	clock_t start_time;
+	start_time = clock();
+	initgraph(WIDTH, HEIGHT);
+	bkinit();
+	initplayer();
+	point(0 + blockwidth / 2, WIDTH - blockwidth / 2, HEIGHT - blockwidth / 2, 0 + blockwidth / 2);
+	clearplayerround();
+	existinit();
+	load();
+	BeginBatchDraw();
+	while (1) {
+		while (clock() - start > changemaze) {
+			start = clock();
+			bkzeroinit();
+			point(0 + blockwidth / 2, WIDTH - blockwidth / 2, HEIGHT - blockwidth / 2, 0 + blockwidth / 2);
+			clearplayerround();
+			existinit();
+		}
+		playerMove();
+		Sleep(1);
+		gamedraw();
+		ctrlFps(start_time);
+		FlushBatchDraw();
+	}
+	EndBatchDraw();
+	return 0;
+}
