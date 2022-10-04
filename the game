@@ -6,9 +6,10 @@
 using namespace std;
 //将画面划分成网格
 #define blockwidth 20//每个网格的宽度
-#define bian 100//变身所需个数
-#define changetime 300//变身时间
-
+#define bian 200//变身所需个数
+#define changetime 250//变身时间
+#define chushispeed 5
+#define bianshenspeed 7
 //画面大小
 #define WIDTH 1200
 #define HEIGHT 720
@@ -158,7 +159,7 @@ void createdot() {
 		for (j = 0; j < HEIGHT / blockwidth; j++) {
 			
 			if (bk[i][j].dot == 1) {
-				setfillcolor(YELLOW);
+				setfillcolor(BLACK);
 				fillcircle(bk[i][j].x, bk[i][j].y, 4);
 			}
 		}
@@ -273,19 +274,19 @@ void playerMove()
 
 		A.x += A.speed;
 	//B移动
-	if (GetAsyncKeyState(38))//W
+	if (GetAsyncKeyState(73))//I
 
 		B.y -= B.speed;
 
-	if (GetAsyncKeyState(40))//S
+	if (GetAsyncKeyState(75))//K
 
 		B.y += B.speed;
 
-	if (GetAsyncKeyState(37))//A
+	if (GetAsyncKeyState(74))//J
 
 		B.x -= B.speed;
 
-	if (GetAsyncKeyState(39))//D
+	if (GetAsyncKeyState(76))//L
 
 		B.x += B.speed;
 	hit();
@@ -340,7 +341,7 @@ void gamedraw() {
 			fillcircle(A.x, A.y, playerwidth / 2);
 		}
 		if (A.zhuangtai == 1) {
-			setfillcolor(BLACK);
+			setfillcolor(YELLOW);
 			fillcircle(A.x, A.y, playerwidth / 2);
 		}
 	}
@@ -421,13 +422,13 @@ void Ainzhuangtai() {
 
 		A.dot = 0;
 		A.zhuangtai = 1;
-			A.speed = 7;
+			A.speed = bianshenspeed;
 }
 void Binzhuangtai() {
 
 		B.dot = 0;
 		B.zhuangtai = 1;
-		B.speed = 7;
+		B.speed = bianshenspeed;
 }
 
 void eatplayer() {
@@ -459,15 +460,15 @@ void playerchange() {
 	if (Atime > changetime) {
 		A.zhuangtai = 0;
 		A.dot = 0;
-		A.speed = 3;
+		A.speed = chushispeed;
 		Atime = 0;
 	}
 
 	if (Btime > changetime) {
 		B.zhuangtai = 0;
 		B.dot = 0;
-		B.speed = 3;
-		Atime = 0;
+		B.speed = chushispeed;
+		Btime = 0;
 	}
 	if (A.zhuangtai == 1)
 		Atime++;
@@ -501,6 +502,10 @@ int main() {
 			point(0 + blockwidth / 2, WIDTH - blockwidth / 2, HEIGHT - blockwidth / 2, 0 + blockwidth / 2);
 			clearplayerround();
 			existinit();
+			if(A.dot>=50)
+			A.dot -= 50;
+			if(B.dot>=50)
+			B.dot -= 50;
 		}
 
 		playerMove();
@@ -516,3 +521,4 @@ int main() {
 	EndBatchDraw();
 	return 0;
 }
+
